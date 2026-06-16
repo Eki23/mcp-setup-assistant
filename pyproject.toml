@@ -4,7 +4,7 @@ build-backend = "setuptools.backends._legacy._Backend"
 
 [project]
 name = "mcp-setup-assistant"
-version = "0.1.0"
+version = "0.1.1"
 description = "An MCP setup assistant package"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -27,6 +27,7 @@ classifiers = [
 
 dependencies = [
     "codebase-memory-mcp",
+    "requests",
 ]
 
 [project.urls]
