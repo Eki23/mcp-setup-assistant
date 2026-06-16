@@ -12,7 +12,7 @@ license = {text = "MIT"}
 keywords = ["mcp", "setup", "assistant"]
 
 authors = [
-    {name = "Ekiza", email = "ekiza@users.noreply.github.com"},
+    {name = "Christian Ekiza", email = "ekiza23@gmail.com"},
 ]
 
 classifiers = [
@@ -30,9 +30,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ekiza/mcp-setup-assistant"
-Repository = "https://github.com/ekiza/mcp-setup-assistant"
-BugTracker = "https://github.com/ekiza/mcp-setup-assistant/issues"
+Homepage = "https://github.com/Eki23/mcp-setup-assistant"
+Repository = "https://github.com/Eki23/mcp-setup-assistant"
+BugTracker = "https://github.com/Eki23/mcp-setup-assistant/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
