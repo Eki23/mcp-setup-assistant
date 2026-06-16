@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy._Backend"
+
+[project]
+name = "mcp-setup-assistant"
+version = "0.1.0"
+description = "An MCP setup assistant package"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+keywords = ["mcp", "setup", "assistant"]
+
+authors = [
+    {name = "Ekiza", email = "ekiza@users.noreply.github.com"},
+]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "codebase-memory-mcp",
+]
+
+[project.urls]
+Homepage = "https://github.com/ekiza/mcp-setup-assistant"
+Repository = "https://github.com/ekiza/mcp-setup-assistant"
+BugTracker = "https://github.com/ekiza/mcp-setup-assistant/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["mcp_setup_assistant*"]
