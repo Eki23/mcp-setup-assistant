@@ -3,12 +3,12 @@ requires = ["setuptools>=68.0", "wheel", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mcp-setup-assistant"
-version = "0.1.1"
+name = "mcp-setup-assist"
+dynamic = ["version"]
 description = "An MCP setup assistant package"
 readme = "README.md"
 requires-python = ">=3.12"
-license = { file = "LICENSE" }
+license = "Apache-2.0"
 keywords = ["mcp", "setup", "assistant"]
 
 authors = [
@@ -18,7 +18,6 @@ authors = [
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -36,8 +35,13 @@ Repository = "https://github.com/Eki23/mcp-setup-assistant"
 BugTracker = "https://github.com/Eki23/mcp-setup-assistant/issues"
 
 [tool.setuptools]
+package-dir = {"" = "src"}
 license-files = ["LICENSE"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["mcp_setup_assistant*"]
+include = ["mcp_setup_assist*"]
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
+local_scheme = "no-local-version"
