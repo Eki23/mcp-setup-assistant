@@ -13,7 +13,7 @@ def run_cli(prog: str, description: str, init_fn: Callable, index_fn: Callable):
 
     # init
     init_parser = subparsers.add_parser("init", help="Set up MCP server config and agent rules for a project")
-    init_parser.add_argument("--agent", action="append", choices=["amazonq", "cursor"], required=True, help="Target agent(s) to configure")
+    init_parser.add_argument("--agent", action="append", choices=["amazonq", "claude", "cursor"], required=True, help="Target agent(s) to configure")
 
     # index
     index_parser = subparsers.add_parser("index", help="Index libraries and project-specific code")

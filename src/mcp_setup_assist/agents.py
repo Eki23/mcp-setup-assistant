@@ -21,6 +21,11 @@ AGENT_CONFIGS = {
         "mcp_file": "mcp.json",
         "rules_dir": ".amazonq/rules",
     },
+    "claude": {
+        "mcp_dir": ".claude",
+        "mcp_file": "settings.json",
+        "rules_dir": ".claude",
+    },
     "cursor": {
         "mcp_dir": ".cursor",
         "mcp_file": "mcp.json",
@@ -48,8 +53,13 @@ def write_mcp_config(project_root: Path, agent: str):
     mcp_dir = project_root / config["mcp_dir"]
     mcp_dir.mkdir(parents=True, exist_ok=True)
     mcp_file = mcp_dir / config["mcp_file"]
-    mcp_file.write_text(json.dumps(MCP_SERVER_CONFIG, indent=2) + "\n")
 
+    if agent == "claude" and mcp_file.exists():
+        existing = json.loads(mcp_file.read_text())
+        existing.setdefault("mcpServers", {}).update(MCP_SERVER_CONFIG["mcpServers"])
+        mcp_file.write_text(json.dumps(existing, indent=2) + "\n")
+    else:
+        mcp_file.write_text(json.dumps(MCP_SERVER_CONFIG, indent=2) + "\n")
 
 def write_rules(project_root: Path, agent: str, rules_file: Path):
     config = AGENT_CONFIGS[agent]
@@ -58,6 +68,15 @@ def write_rules(project_root: Path, agent: str, rules_file: Path):
     dst = rules_dir / rules_file.name
     shutil.copy2(rules_file, dst)
 
+    if agent == "claude":
+        claude_md = project_root / "CLAUDE.md"
+        import_line = f"@.claude/{rules_file.name}\n"
+        if claude_md.exists():
+            if import_line.strip() not in claude_md.read_text():
+                with claude_md.open("a") as f:
+                    f.write(f"\n{import_line}")
+        else:
+            claude_md.write_text(import_line)
 
 def write_cbmignore(project_root: Path, cbmignore_file: Path):
     dst = project_root / ".cbmignore"
