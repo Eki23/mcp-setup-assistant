@@ -7,39 +7,47 @@ import sys
 from pathlib import Path
 
 
-def run_index(venv_path: Path, namespace: str, project_folders: list[Path], cbmignore_file: Path):
-    """Index a namespace from site-packages and any project-specific folders.
+def run_index(venv_path: Path, packages: list[str], project_folders: list[Path], cbmignore_file: Path):
+    """Index one or more packages from a venv and any project-specific folders.
 
     All paths must be absolute: venv_path, each entry in project_folders, and cbmignore_file.
     """
-    # Index site-packages namespace
-    ns_path = find_namespace_in_venv(venv_path, namespace)
-    if ns_path:
-        apply_cbmignore(ns_path, cbmignore_file)
-        index_path(ns_path)
-    else:
-        print(f"[WARN] {namespace} not found in {venv_path}/site-packages — skipping base library indexing")
+    # Index all directories that make up each package (handles editable/local installs)
+    for package in packages:
+        ns_paths = find_namespace_paths(venv_path, package)
+        if ns_paths:
+            for ns_path in ns_paths:
+                apply_cbmignore(ns_path, cbmignore_file)
+                index_path(ns_path)
+        else:
+            print(f"[WARN] {package} not found in venv — skipping")
 
     # Index project-specific folders
     for folder in project_folders:
         if folder.is_dir():
             index_path(folder)
-            
+        else:
+            print(f"[INFO] {folder} not found — skipping")
 
     print("\n[DONE] Indexing complete.")
 
 
-def find_namespace_in_venv(venv: Path, namespace: str) -> Path | None:
-    """Find a namespace package directory in a venv's site-packages."""
-    # Windows
-    candidate = venv / "Lib" / "site-packages" / namespace
-    if candidate.is_dir():
-        return candidate
-    # Linux/macOS
-    for p in (venv / "lib").glob(f"python*/site-packages/{namespace}"):
-        if p.is_dir():
-            return p
-    return None
+def find_namespace_paths(venv: Path, package: str) -> list[Path]:
+    """Return all directories that make up a package, using the venv's Python.
+
+    Works for regular installs, editable installs, and local folder installs.
+    """
+    python = venv / "Scripts" / "python.exe"
+    if not python.exists():
+        python = venv / "bin" / "python"
+
+    result = subprocess.run(
+        [str(python), "-c",
+         f"import importlib.util; spec = importlib.util.find_spec('{package}'); "
+         f"print('\\n'.join(spec.submodule_search_locations) if spec else '')"],
+        capture_output=True, text=True
+    )
+    return [Path(p) for p in result.stdout.splitlines() if p.strip()]
 
 
 def apply_cbmignore(target_path: Path, cbmignore_file: Path):
