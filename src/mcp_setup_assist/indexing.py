@@ -12,6 +12,8 @@ def run_index(venv_path: Path, packages: list[str], project_folders: list[Path],
 
     All paths must be absolute: venv_path, each entry in project_folders, and cbmignore_file.
     """
+    seen: set[Path] = set()
+    
     # Index all directories that make up each package (handles editable/local installs)
     for package in packages:
         ns_paths = find_namespace_paths(venv_path, package)
@@ -24,10 +26,11 @@ def run_index(venv_path: Path, packages: list[str], project_folders: list[Path],
 
     # Index project-specific folders
     for folder in project_folders:
-        if folder.is_dir():
-            index_path(folder)
-        else:
+        if not folder.is_dir():
             print(f"[INFO] {folder} not found — skipping")
+        else folder.resolve() not in seen:
+            seen.add(folder.resolve())
+            index_path(folder)
 
     print("\n[DONE] Indexing complete.")
 
