@@ -7,24 +7,24 @@ import sys
 from pathlib import Path
 
 
-def run_index(venv_path: str, namespace: str, project_folders: list[str], cbmignore_file: Path):
-    """Index a namespace from site-packages and any project-specific folders."""
-    project_root = Path.cwd()
-    venv = project_root / venv_path
+def run_index(venv_path: Path, namespace: str, project_folders: list[Path], cbmignore_file: Path):
+    """Index a namespace from site-packages and any project-specific folders.
 
+    All paths must be absolute: venv_path, each entry in project_folders, and cbmignore_file.
+    """
     # Index site-packages namespace
-    ns_path = find_namespace_in_venv(venv, namespace)
+    ns_path = find_namespace_in_venv(venv_path, namespace)
     if ns_path:
         apply_cbmignore(ns_path, cbmignore_file)
         index_path(ns_path)
     else:
-        print(f"[WARN] {namespace} not found in {venv}/site-packages — skipping base library indexing")
+        print(f"[WARN] {namespace} not found in {venv_path}/site-packages — skipping base library indexing")
 
     # Index project-specific folders
     for folder in project_folders:
-        folder_path = project_root / folder
-        if folder_path.is_dir():
-            index_path(folder_path)
+        if folder.is_dir():
+            index_path(folder)
+            
 
     print("\n[DONE] Indexing complete.")
 
