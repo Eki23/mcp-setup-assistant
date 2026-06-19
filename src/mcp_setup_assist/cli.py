@@ -18,8 +18,8 @@ def run_cli(prog: str, description: str, init_fn: Callable, index_fn: Callable):
     # index
     index_parser = subparsers.add_parser("index", help="Index libraries and project-specific code")
     index_parser.add_argument("--venv", default=".venv", help="Path to the virtual environment (default: .venv)")
-    index_parser.add_argument("--package", action="append", default=[], metavar="PACKAGE", help="Additional package to index (repeatable)")
-    index_parser.add_argument("--folder", action="append", default=[], metavar="FOLDER", help="Additional folder to index (repeatable)")
+    index_parser.add_argument("--package", action="extend", type=lambda s: [p.strip() for p in s.split(",")], default=[], metavar="PACKAGE", help="Additional package(s) to index (comma-separated or repeatable)")
+    index_parser.add_argument("--folder", action="extend", type=lambda s: [f.strip() for f in s.split(",")], default=[], metavar="FOLDER", help="Additional folder(s) to index (comma-separated or repeatable)")
 
     args = parser.parse_args()
 
