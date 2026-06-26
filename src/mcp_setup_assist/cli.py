@@ -12,21 +12,75 @@ def run_cli(prog: str, description: str, init_fn: Callable, index_fn: Callable):
     subparsers = parser.add_subparsers(dest="command")
 
     # init
-    init_parser = subparsers.add_parser("init", help="Set up MCP server config and agent rules for a project")
-    init_parser.add_argument("--agent", action="append", choices=["amazonq", "claude", "cursor"], required=True, help="Target agent(s) to configure")
+    init_parser = subparsers.add_parser(
+        "init", help="Set up MCP server config and agent rules for a project"
+    )
+    init_parser.add_argument(
+        "--agent",
+        action="append",
+        choices=["amazonq", "claude", "cursor"],
+        required=True,
+        help="Target agent(s) to configure (repeatable)",
+    )
 
     # index
-    index_parser = subparsers.add_parser("index", help="Index libraries and project-specific code")
-    index_parser.add_argument("--venv", default=".venv", help="Path to the virtual environment (default: .venv)")
-    index_parser.add_argument("--package", action="extend", type=lambda s: [p.strip() for p in s.split(",")], default=[], metavar="PACKAGE", help="Additional package(s) to index (comma-separated or repeatable)")
-    index_parser.add_argument("--folder", action="extend", type=lambda s: [f.strip() for f in s.split(",")], default=[], metavar="FOLDER", help="Additional folder(s) to index (comma-separated or repeatable)")
+    index_parser = subparsers.add_parser(
+        "index", help="Index libraries and project-specific code"
+    )
+    index_parser.add_argument(
+        "--venv",
+        default=".venv",
+        help="Path to the virtual environment (default: .venv)",
+    )
+    index_parser.add_argument(
+        "--package",
+        action="extend",
+        type=lambda s: [p.strip() for p in s.split(",")],
+        default=[],
+        metavar="PACKAGE",
+        help="Additional package(s) to index (comma-separated or repeatable)",
+    )
+    index_parser.add_argument(
+        "--folder",
+        action="extend",
+        type=lambda s: [f.strip() for f in s.split(",")],
+        default=[],
+        metavar="FOLDER",
+        help=(
+            "Additional folder(s) to index; absolute paths are used as-is"
+            " (comma-separated or repeatable)"
+        ),
+    )
+    index_parser.add_argument(
+        "--include-system-packages",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help=(
+            "Fall back to system Python for packages not found in the venv"
+            " (default: enabled; use --no-include-system-packages to disable)"
+        ),
+    )
+    index_parser.add_argument(
+        "--index-as-separate-packages",
+        action="store_true",
+        help=(
+            "Index each source tree as an independent project instead of"
+            " combining into one index (default: combined)"
+        ),
+    )
 
     args = parser.parse_args()
 
     if args.command == "init":
         init_fn(args.agent)
     elif args.command == "index":
-        index_fn(args.venv, args.package, args.folder)
+        index_fn(
+            args.venv,
+            args.package,
+            args.folder,
+            args.include_system_packages,
+            args.index_as_separate_packages,
+        )
     else:
         parser.print_help()
         sys.exit(1)
